@@ -23,6 +23,11 @@ def frontend():
 def frontend_script():
     from fastapi.responses import FileResponse
     return FileResponse(Path(__file__).with_name("app.js"), media_type="application/javascript")
+
+@app.get("/musebridge-client.js", include_in_schema=False)
+def frontend_client_script():
+    from fastapi.responses import FileResponse
+    return FileResponse(Path(__file__).with_name("app.js"), media_type="application/javascript")
 DEMO_TOKENS = {"alex": os.getenv("MUSEBRIDGE_ALEX_TOKEN", "alex-demo-token"), "jordan": os.getenv("MUSEBRIDGE_JORDAN_TOKEN", "jordan-demo-token")}
 AUTH_MODE = os.getenv("MUSEBRIDGE_AUTH_MODE", "demo").lower()
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
