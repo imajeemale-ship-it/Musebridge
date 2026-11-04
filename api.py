@@ -1,6 +1,7 @@
 """HTTP adapter for MuseBridge. Install requirements and run with uvicorn api:app."""
 import os
 import json
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from pathlib import Path
@@ -28,9 +29,9 @@ def email_sign_in(email: str = Form(...)):
     from fastapi.responses import HTMLResponse
     if not SUPABASE_URL or not SUPABASE_PUBLISHABLE_KEY:
         raise HTTPException(503, "Supabase authentication is not configured")
-    payload = json.dumps({"email": email, "create_user": True, "email_redirect_to": "https://musebridge.onrender.com/"}).encode()
+    payload = json.dumps({"email": email, "create_user": True}).encode()
     request = Request(
-        f"{SUPABASE_URL}/auth/v1/otp",
+        f"{SUPABASE_URL}/auth/v1/otp?redirect_to={quote('https://musebridge.onrender.com/', safe='')}",
         data=payload,
         headers={"apikey": SUPABASE_PUBLISHABLE_KEY, "Content-Type": "application/json"},
         method="POST",
