@@ -4,7 +4,7 @@ import json
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from pathlib import Path
-from fastapi import FastAPI, HTTPException, Header, Depends
+from fastapi import FastAPI, HTTPException, Header, Depends, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from backend import MuseBridge, BridgeError
@@ -19,9 +19,28 @@ def frontend():
     from fastapi.responses import HTMLResponse
     index = Path(__file__).with_name("index.html").read_text(encoding="utf-8")
     client = Path(__file__).with_name("app.js").read_text(encoding="utf-8")
-    email_auth = '<div id="email-auth" style="margin:10px 0"><input id="auth-email" type="email" value="imajeemale@gmail.com" style="padding:10px;border-radius:8px;border:1px solid #263348;background:#090f18;color:white"><button id="email-signin">Email me a secure sign-in link</button><span id="email-notice" class="muted"></span></div>'
+    email_auth = '<form action="/auth/email" method="post" style="margin:10px 0"><input name="email" type="email" value="imajeemale@gmail.com" required style="padding:10px;border-radius:8px;border:1px solid #263348;background:#090f18;color:white"><button type="submit">Email me a secure sign-in link</button></form>'
     page = index.replace('<nav>', email_auth + '<nav>')
     return HTMLResponse(page.replace("</body>", f"<script>{client}</script></body>"))
+
+@app.post("/auth/email", include_in_schema=False)
+def email_sign_in(email: str = Form(...)):
+    from fastapi.responses import HTMLResponse
+    if not SUPABASE_URL or not SUPABASE_PUBLISHABLE_KEY:
+        raise HTTPException(503, "Supabase authentication is not configured")
+    payload = json.dumps({"email": email, "create_user": True}).encode()
+    request = Request(
+        f"{SUPABASE_URL}/auth/v1/otp",
+        data=payload,
+        headers={"apikey": SUPABASE_PUBLISHABLE_KEY, "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=8):
+            pass
+    except (HTTPError, URLError, TimeoutError):
+        raise HTTPException(502, "Supabase could not send the sign-in link")
+    return HTMLResponse(f"<html><body style='background:#080b12;color:#f3f6fb;font:16px Arial;padding:30px'><h1>Check your email</h1><p>A secure MuseBridge sign-in link was sent to {email}.</p><p><a style='color:#a99cff' href='/'>Return to MuseBridge</a></p></body></html>")
 
 @app.get("/app.js", include_in_schema=False)
 def frontend_script():
