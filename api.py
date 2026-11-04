@@ -28,7 +28,7 @@ def email_sign_in(email: str = Form(...)):
     from fastapi.responses import HTMLResponse
     if not SUPABASE_URL or not SUPABASE_PUBLISHABLE_KEY:
         raise HTTPException(503, "Supabase authentication is not configured")
-    payload = json.dumps({"email": email, "create_user": True}).encode()
+    payload = json.dumps({"email": email, "create_user": True, "email_redirect_to": "https://musebridge.onrender.com/"}).encode()
     request = Request(
         f"{SUPABASE_URL}/auth/v1/otp",
         data=payload,
