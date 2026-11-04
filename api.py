@@ -19,7 +19,9 @@ def frontend():
     from fastapi.responses import HTMLResponse
     index = Path(__file__).with_name("index.html").read_text(encoding="utf-8")
     client = Path(__file__).with_name("app.js").read_text(encoding="utf-8")
-    return HTMLResponse(index.replace("</body>", f"<script>{client}</script></body>"))
+    email_auth = '<div id="email-auth" style="margin:10px 0"><input id="auth-email" type="email" value="imajeemale@gmail.com" style="padding:10px;border-radius:8px;border:1px solid #263348;background:#090f18;color:white"><button id="email-signin">Email me a secure sign-in link</button><span id="email-notice" class="muted"></span></div>'
+    page = index.replace('<nav>', email_auth + '<nav>')
+    return HTMLResponse(page.replace("</body>", f"<script>{client}</script></body>"))
 
 @app.get("/app.js", include_in_schema=False)
 def frontend_script():
