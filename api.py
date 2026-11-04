@@ -16,8 +16,10 @@ bridge = MuseBridge("musebridge.db")
 
 @app.get("/", include_in_schema=False)
 def frontend():
-    from fastapi.responses import FileResponse
-    return FileResponse(Path(__file__).with_name("index.html"))
+    from fastapi.responses import HTMLResponse
+    index = Path(__file__).with_name("index.html").read_text(encoding="utf-8")
+    client = Path(__file__).with_name("app.js").read_text(encoding="utf-8")
+    return HTMLResponse(index.replace("</body>", f"<script>{client}</script></body>"))
 
 @app.get("/app.js", include_in_schema=False)
 def frontend_script():
