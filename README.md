@@ -27,3 +27,16 @@ Then visit `http://localhost:4173`.
 ## Important limitation
 
 This is the UI/protocol demonstration, not yet a production multi-user backend. The next implementation slice is a FastAPI service with authenticated identities, server-side consent enforcement, idempotent message delivery, revocation, and provider adapters behind environment-based secrets.
+
+
+## Architecture
+
+MuseBridge separates the product boundary from the transport layer:
+
+- **Frontend:** a lightweight browser client for Bridge, Consent, Agreements, and Audit views.
+- **API:** FastAPI routes enforce identity, consent checks, approval state, revocation, and audit access.
+- **Domain engine:** a deterministic Python service models drafts, permissions, agreements, delivery, and idempotency.
+- **Persistence:** SQLite keeps the demo state across restarts.
+- **Production path:** Supabase Auth validates bearer tokens; Supabase Postgres/RLS is the next persistence upgrade.
+
+The core safety rule is simple: nothing crosses the bridge merely because an agent proposed it. A message must be permitted, approved, and still valid at delivery time.
