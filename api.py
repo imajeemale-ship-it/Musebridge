@@ -20,7 +20,7 @@ def frontend():
     from fastapi.responses import HTMLResponse
     index = Path(__file__).with_name("index.html").read_text(encoding="utf-8")
     client = Path(__file__).with_name("app.js").read_text(encoding="utf-8")
-    email_auth = '<form action="/auth/email" method="post" style="margin:10px 0"><input name="email" type="email" value="imajeemale@gmail.com" required style="padding:10px;border-radius:8px;border:1px solid #263348;background:#090f18;color:white"><button type="submit">Email me a secure sign-in link</button></form>'
+    email_auth = '<form action="/auth/email" method="post" style="margin:10px 0"><input name="email" type="email" required style="padding:10px;border-radius:8px;border:1px solid #263348;background:#090f18;color:white"><button type="submit">Email me a secure sign-in link</button></form>' if AUTH_MODE == "supabase" else ''
     page = index.replace('<nav>', email_auth + '<nav>')
     return HTMLResponse(page.replace("</body>", f"<script>{client}</script></body>"))
 
