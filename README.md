@@ -40,3 +40,9 @@ MuseBridge separates the product boundary from the transport layer:
 - **Production path:** Supabase Auth validates bearer tokens; Supabase Postgres/RLS is the next persistence upgrade.
 
 The core safety rule is simple: nothing crosses the bridge merely because an agent proposed it. A message must be permitted, approved, and still valid at delivery time.
+
+
+## Portfolio materials
+
+- [Portfolio case study](PORTFOLIO_CASE_STUDY.md)
+- [60-second demo script](DEMO_SCRIPT.md)
