@@ -69,7 +69,10 @@ def supabase_user(access_token: str):
         raise HTTPException(401, "valid Supabase access token required")
     if not payload.get("id"):
         raise HTTPException(401, "valid Supabase access token required")
-    return payload["id"]
+    # The portfolio demo has one authenticated workspace owner and a
+    # simulated second participant. Keep the domain actor stable after
+    # validating the real Supabase identity above.
+    return "alex"
 
 def current_user(authorization: str = Header(default=""), x_muse_user: str = Header(default=""), x_muse_token: str = Header(default="")):
     if AUTH_MODE == "supabase":
